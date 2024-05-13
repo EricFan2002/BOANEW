@@ -10,6 +10,43 @@ BOANEW is a trading system that matches orders and executes transactions based o
 - Handle position checks and reject orders that fail position checks
 - Generate output files for exchange report, client report, and instrument report
 
+## Structure
+
+├── Client Report.csv
+├── Exchange Report.csv
+├── Instrument Report.csv
+├── Pipfile
+├── Pipfile.lock
+├── README.md
+├── app.py
+├── csv.cpp
+├── csv.hpp
+├── input_clients.csv
+├── input_instruments.csv
+├── input_orders.csv
+├── input_orders2.csv
+├── output_client_report.csv
+├── output_exchange_report.csv
+├── output_instrument_report.csv
+├── proc
+├── proc.cpp
+├── proc.dSYM
+│   └── Contents
+│       ├── Info.plist
+│       └── Resources
+│           ├── DWARF
+│           │   └── proc
+│           └── Relocations
+│               └── aarch64
+│                   └── proc.yml
+├── proc_test
+├── proc_test.cpp
+├── validator
+├── validator.cpp
+├── validator_test
+├── validator_test.cpp
+└── visualization.py
+
 ## Getting Started
 
 These instructions will help you set up and run the project on your local machine.
