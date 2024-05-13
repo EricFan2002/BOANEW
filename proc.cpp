@@ -854,14 +854,14 @@ pair<double, double> calculateHighLow(const std::vector<Transaction> &transactio
 
 void outputFormatting()
 {
-    ofstream ex("./1 Exchange Report.csv");
+    ofstream ex("output_exchange_report.csv");
     ex << "OrderID,RejectionReason" << endl;
     for (auto &i : exchangeReport)
     {
         ex << i.first << "," << i.second << endl;
     }
     ex.close();
-    ofstream cl("./2 Client Report.csv");
+    ofstream cl("output_client_report.csv");
     cl << "ClientID,InstrumentID,NetPosition" << endl;
     for (auto &i : clients)
     {
@@ -871,7 +871,7 @@ void outputFormatting()
         }
     }
     cl.close();
-    ofstream insr("./3 Instrument Report.csv");
+    ofstream insr("output_instrument_report.csv");
     map<string, vector<Transaction>> trans;
     for (auto &i : mTransactions)
     {
