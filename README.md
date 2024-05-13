@@ -18,6 +18,7 @@ BOANEW is a trading system that matches orders and executes transactions based o
 ├── Client Report.csv
 ├── Exchange Report.csv
 ├── Instrument Report.csv
+├── LICENSE
 ├── Pipfile
 ├── Pipfile.lock
 ├── README.md
@@ -29,19 +30,22 @@ BOANEW is a trading system that matches orders and executes transactions based o
 ├── input_orders.csv
 ├── input_orders2.csv
 ├── output_client_report.csv
+├── output_client_report_test.csv
 ├── output_exchange_report.csv
+├── output_exchange_report_test.csv
 ├── output_instrument_report.csv
+├── output_instrument_report_test.csv
 ├── proc
 ├── proc.cpp
 ├── proc.dSYM
-│ └── Contents
-│ ├── Info.plist
-│ └── Resources
-│ ├── DWARF
-│ │ └── proc
-│ └── Relocations
-│ └── aarch64
-│ └── proc.yml
+│   └── Contents
+│       ├── Info.plist
+│       └── Resources
+│           ├── DWARF
+│           │   └── proc
+│           └── Relocations
+│               └── aarch64
+│                   └── proc.yml
 ├── proc_test
 ├── proc_test.cpp
 ├── validator
