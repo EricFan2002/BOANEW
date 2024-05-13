@@ -499,12 +499,20 @@ int processRealTimeTransactions(int start)
                         fPrice = sell->price;
                         maxTime = time2;
                         cout << "2 buy" << endl;
+                        if (fPrice == DBL_MAX)
+                        {
+                            fPrice = buy->price;
+                        }
                     }
                     else
                     {
                         fPrice = buy->price;
                         maxTime = time1;
                         cout << "1 sell" << endl;
+                        if (fPrice == DBL_MAX)
+                        {
+                            fPrice = sell->price;
+                        }
                     }
                     addTransaction(sell->client, buy->client, thisins, max_amount, fPrice, maxTime.hr, maxTime.min, maxTime.sec);
                     if_any = 1;
@@ -828,7 +836,7 @@ pair<int, double> calculateVWAP(const std::vector<Transaction> &transactions)
     {
         totalValue += transaction.price * transaction.amount;
         totalVolume += transaction.amount;
-        cout << transaction.price << " " << transaction.amount << " = " << transaction.price * transaction.amount << endl;
+        // cout << transaction.price << " " << transaction.amount << " = " << transaction.price * transaction.amount << endl;
     }
 
     if (totalVolume == 0)
