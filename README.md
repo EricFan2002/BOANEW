@@ -24,19 +24,19 @@ These instructions will help you set up and run the project on your local machin
 
 1. Clone the repository:
 
-git clone https://github.com/your-username/BOA2024.git
+> git clone https://github.com/your-username/BOA2024.git
 
 2. Change to the project directory:
 
-cd BOANEW
+> cd BOANEW
 
 3. Create a virtual environment using Pipenv:
 
-pipenv shell
+> pipenv shell
 
 4. Install the required Python dependencies:
 
-pipenv install
+> pipenv install
 
 ### Usage
 
@@ -47,12 +47,12 @@ pipenv install
 
 2. Run the C++ program to process the orders and generate output files:
 
-g++ -std=c++20 proc.cpp csv.cpp -o proc
-./proc
+> g++ -std=c++20 proc.cpp csv.cpp -o proc
+> ./proc
 
 3. Run the Python application to visualize the trading dashboard:
 
-python app.py
+> python app.py
 
 4. Open a web browser and navigate to `http://localhost:8050` to access the trading dashboard.
 
@@ -62,8 +62,8 @@ The project includes unit tests and integration tests to ensure the correctness 
 
 To run the tests:
 
-g++ -std=c++20 validator_test.cpp csv.cpp -o proc_test
-./validator_test
+> g++ -std=c++20 validator_test.cpp csv.cpp -o proc_test
+> ./validator_test
 
-g++ -std=c++20 proc_test.cpp csv.cpp -o proc_test
-./proc_test
+> g++ -std=c++20 proc_test.cpp csv.cpp -o proc_test
+> ./proc_test
