@@ -146,7 +146,7 @@ map<string, double> getBestPrice()
         buyOrdersList[thisins].reserve(buyOrders[thisins].size());
         while (!sellOrders[thisins].empty())
         {
-            auto order = sellOrders[thisins].top();
+            auto &order = sellOrders[thisins].top();
             sellOrders[thisins].pop();
             if (clients[order->client].positionCheck)
             {
@@ -167,7 +167,7 @@ map<string, double> getBestPrice()
         }
         while (!buyOrders[thisins].empty())
         {
-            auto order = buyOrders[thisins].top();
+            auto &order = buyOrders[thisins].top();
             buyOrders[thisins].pop();
             buyOrdersList[thisins][buyOrderCnt].price = order->price;
             buyOrdersList[thisins][buyOrderCnt].client = order->client;
@@ -188,12 +188,13 @@ map<string, double> getBestPrice()
             while (sellOrdersList[thisins][sellI].price <= buy.price && sellI < sellOrderCnt)
             {
                 sellOrderAccumulate += sellOrdersList[thisins][sellI].shares;
+                auto &i = sellOrdersList[thisins][sellI];
                 maxSellPrice = maxSellPrice > sellOrdersList[thisins][sellI].price ? maxSellPrice : sellOrdersList[thisins][sellI].price;
                 sellI++;
             }
             if (buy.price == DBL_MAX)
                 price = maxSellPrice;
-            cout << "@ " << price << " can buy " << buyOrderAccumulate << " can sell " << sellOrderAccumulate << endl;
+            // cout << "@ " << price << " can buy " << buyOrderAccumulate << " @ " << buy.price << " can sell " << sellOrderAccumulate << " @ " << maxSellPrice << endl;
             int sell = min(buyOrderAccumulate, sellOrderAccumulate);
             if (sell >= maxSell)
             {
@@ -245,9 +246,10 @@ void processAllMorningTransactions(map<string, double> targetPrice)
         sellOrderAccumulate = 0;
         sellOrdersList[thisins].reserve(sellOrders[thisins].size());
         buyOrdersList[thisins].reserve(buyOrders[thisins].size());
+        auto sellOrders2 = sellOrders[thisins];
         while (!sellOrders[thisins].empty())
         {
-            auto order = sellOrders[thisins].top();
+            auto &order = sellOrders[thisins].top();
             sellOrders[thisins].pop();
             if (order->price != 0)
             {
@@ -271,10 +273,10 @@ void processAllMorningTransactions(map<string, double> targetPrice)
                 }
             }
         }
-        while (!sellOrders[thisins].empty())
+        while (!sellOrders2.empty())
         {
-            auto order = sellOrders[thisins].top();
-            sellOrders[thisins].pop();
+            auto &order = sellOrders2.top();
+            sellOrders2.pop();
             if (order->price == 0)
             {
                 if (order->price > targetPrice[thisins])
@@ -296,7 +298,7 @@ void processAllMorningTransactions(map<string, double> targetPrice)
         }
         while (!buyOrders[thisins].empty())
         {
-            auto order = buyOrders[thisins].top();
+            auto &order = buyOrders[thisins].top();
             buyOrders[thisins].pop();
             if (order->price > targetPrice[thisins])
             {
@@ -530,7 +532,7 @@ int processRealTimeTransactions(int start)
         if (!if_any)
         {
             if (testIfEveningAuctionStart(mOrders[start]))
-                break;
+                return start;
             auto &o = mOrders[start];
             cout << "[Add Order] " << start << " @ " << o.hours << " : " << o.mins << " " << o.quantity << " @ " << o.price << endl;
             if (o.side[0] == 'S')
@@ -571,11 +573,15 @@ void processAllEveningTransactions(map<string, double> targetPrice)
         buyOrderCnt = 0;
         buyOrderAccumulate = 0;
         sellOrderAccumulate = 0;
+        sellOrdersList[thisins].clear();
+        buyOrdersList[thisins].clear();
         sellOrdersList[thisins].reserve(sellOrders[thisins].size());
         buyOrdersList[thisins].reserve(buyOrders[thisins].size());
+        auto sellOrders2 = sellOrders[thisins];
+        cout << "handling : " << thisins << " " << sellOrders[thisins].size() << endl;
         while (!sellOrders[thisins].empty())
         {
-            auto order = sellOrders[thisins].top();
+            auto &order = sellOrders[thisins].top();
             sellOrders[thisins].pop();
             if (order->price != 0)
             {
@@ -593,14 +599,14 @@ void processAllEveningTransactions(map<string, double> targetPrice)
                     sellOrdersList[thisins][sellOrderCnt].shares = order->quantity;
                     sellOrdersList[thisins][sellOrderCnt].order = order;
                     sellOrderCnt++;
-                    cout << "+SELL " << order->client << " " << order->price << " " << order->quantity << " at " << order->time << endl;
+                    cout << "+Night SELL " << order->client << " " << order->price << " " << order->quantity << " at " << order->time << endl;
                 }
             }
         }
-        while (!sellOrders[thisins].empty())
+        while (!sellOrders2.empty())
         {
-            auto order = sellOrders[thisins].top();
-            sellOrders[thisins].pop();
+            auto &order = sellOrders2.top();
+            sellOrders2.pop();
             if (order->price == 0)
             {
                 if (clients[order->client].position[order->instrument] < order->quantity)
@@ -613,14 +619,14 @@ void processAllEveningTransactions(map<string, double> targetPrice)
                 sellOrdersList[thisins][sellOrderCnt].shares = order->quantity;
                 sellOrdersList[thisins][sellOrderCnt].order = order;
                 sellOrderCnt++;
-                cout << "+SELL " << order->client << " " << order->price << " " << order->quantity << " at " << order->time << endl;
+                cout << "+Night SELL " << order->client << " " << order->price << " " << order->quantity << " at " << order->time << endl;
             }
             else
                 break;
         }
         while (!buyOrders[thisins].empty())
         {
-            auto order = buyOrders[thisins].top();
+            auto &order = buyOrders[thisins].top();
             buyOrders[thisins].pop();
             if (order->price > targetPrice[thisins])
             {
@@ -641,6 +647,7 @@ void processAllEveningTransactions(map<string, double> targetPrice)
         int sellI = 0;
         int buyI = 0;
         int totalSale = 0;
+        cout << "sellOrderCnt " << sellOrderCnt << "  buyOrderCnt " << buyOrderCnt << endl;
         while (sellI < sellOrderCnt && buyI < buyOrderCnt)
         {
             auto &buy = buyOrdersList[thisins][buyI];
@@ -652,7 +659,7 @@ void processAllEveningTransactions(map<string, double> targetPrice)
             sell.shares -= trade;
             double price = targetPrice[thisins];
             cout << " BUY -= " << buy.shares << " SELL -= " << sell.shares << " @ " << price << endl;
-            addTransaction(sell.client, buy.client, thisins, trade, price, 9, 30, 0);
+            addTransaction(sell.client, buy.client, thisins, trade, price, 16, 10, 0);
             if (buy.shares == 0)
             {
                 buyI++;
@@ -693,6 +700,7 @@ int processEveningAuction(int start)
             sellOrdersRealTime[thisins].pop();
         }
     }
+    int bb = start;
     for (; start < mOrders.size(); start++)
     {
         auto &oneOrder = mOrders[start];
@@ -716,8 +724,10 @@ int processEveningAuction(int start)
         }
     }
     auto res = getBestPrice();
+    cout << "STAGE 2 " << endl;
     buyOrders.clear();
     sellOrders.clear();
+    start = bb;
     for (auto i : mInstruments)
     {
         string thisins = i.instrumentId;
@@ -736,11 +746,13 @@ int processEveningAuction(int start)
             sellOrdersRealTime[thisins].pop();
         }
     }
+    cout << start << " VS " << mOrders.size() << endl;
     for (; start < mOrders.size(); start++)
     {
         auto &oneOrder = mOrders[start];
-        if (testIfEveningAuctionEnd(oneOrder))
-            break;
+        cout << "order: " << oneOrder.client << " @ " << oneOrder.price << endl;
+        // if (testIfEveningAuctionEnd(oneOrder))
+        // break;
         if (oneOrder.side[0] == 'B')
         {
             cout << "[Evening B] " << oneOrder.time << " " << oneOrder.quantity << " " << oneOrder.price << endl;
@@ -748,15 +760,19 @@ int processEveningAuction(int start)
         }
         else if (oneOrder.side[0] == 'S')
         {
+            cout << "[Evening S] " << oneOrder.time << " " << oneOrder.quantity << " " << oneOrder.price << endl;
             if (clients[oneOrder.client].position[oneOrder.instrument] < oneOrder.quantity)
                 continue;
-            cout << "[Evening S] " << oneOrder.time << " " << oneOrder.quantity << " " << oneOrder.price << endl;
             sellOrders[oneOrder.instrument].push(&oneOrder);
         }
         else
         {
             cout << "Evening Error " << oneOrder.orderId << " Type >" << oneOrder.side << "<" << endl;
         }
+    }
+    for (auto i : sellOrders)
+    {
+        cout << i.first << " SIZE IS: " << i.second.size() << endl;
     }
     processAllEveningTransactions(res);
     // for (auto i : mInstruments)
@@ -862,14 +878,14 @@ pair<double, double> calculateHighLow(const std::vector<Transaction> &transactio
 
 void outputFormatting()
 {
-    ofstream ex("output_exchange_report.csv");
+    ofstream ex("./1 Exchange Report.csv");
     ex << "OrderID,RejectionReason" << endl;
     for (auto &i : exchangeReport)
     {
         ex << i.first << "," << i.second << endl;
     }
     ex.close();
-    ofstream cl("output_client_report.csv");
+    ofstream cl("./2 Client Report.csv");
     cl << "ClientID,InstrumentID,NetPosition" << endl;
     for (auto &i : clients)
     {
@@ -879,7 +895,7 @@ void outputFormatting()
         }
     }
     cl.close();
-    ofstream insr("output_instrument_report.csv");
+    ofstream insr("./3 Instrument Report.csv");
     map<string, vector<Transaction>> trans;
     for (auto &i : mTransactions)
     {
